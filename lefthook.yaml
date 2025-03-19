@@ -1,0 +1,49 @@
+# lefthook.yaml 
+pre-commit:
+  parallel: true
+  commands:
+    protect-main:
+      run: |
+        BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
+          echo "Direct commits to \033[1m$BRANCH\033[0m branch are not allowed"
+          exit 1
+        fi
+    terraform-format:
+      globs: 
+        - "*.tf"
+        - "*.tfvars"
+      run: terraform fmt -recursive
+    terraform-lint:
+      globs: 
+        - "*.tf"
+        - "*.tfvars"
+      run: tflint --recursive
+    detect-secrets: #brew install detect-secrets jq
+      run: |
+        detect-secrets scan --disable-plugin KeywordDetector | jq 'del(.plugins_used, .filters_used) | {version: .version, results: .results, generated_at: .generated_at}' -C
+
+prepare-commit-msg: #npm install -g commitizen && git config --global core.editor cat
+  commands:
+    commitzen:
+      interactive: true
+      run: npx cz --hook || true
+      env:
+        LEFTHOOK: 0
+        GIT_PARAMS: "{1}"
+
+commit-msg:
+  commands:
+    lint-commit: #npm install -g @commitlint/cli @commitlint/config-conventional
+      run: npx commitlint --extends @commitlint/config-conventional --edit {1}
+
+post-checkout:
+  commands:
+    auto-pull:
+      run: |
+        if OUTPUT=$(git pull 2>&1); then
+          echo "$OUTPUT"
+          echo "Autosync Successful"
+        else
+          echo "Branch not found in remote. Skipping autosync"
+        fi
