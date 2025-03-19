@@ -1,0 +1,1 @@
+[ ] - Add configure hook to check for dependencies on machine and install them if not present

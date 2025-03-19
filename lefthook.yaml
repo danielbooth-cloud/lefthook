@@ -9,23 +9,34 @@ pre-commit:
           echo "Direct commits to \033[1m$BRANCH\033[0m branch are not allowed"
           exit 1
         fi
+
     terraform-format:
+      stage_fixed: true
       globs:
         - "*.tf"
         - "*.tfvars"
       run: terraform fmt -recursive
+    go-format:
+      stage_fixed: true
+      globs:
+        - "*.go"
+      run: gofmt -w .
+
     terraform-lint:
       globs:
         - "*.tf"
         - "*.tfvars"
       run: tflint --recursive
+    yaml-lint:
+      globs:
+        - "*.yaml"
+        - "*.yml"
+      run: |
+        yamllint . -d "{extends: default, rules: {line-length: disable, document-start: disable}}"
+
     detect-secrets: #brew install detect-secrets jq
       run: |
         detect-secrets scan --disable-plugin KeywordDetector | jq 'del(.plugins_used, .filters_used) | {version: .version, results: .results, generated_at: .generated_at}' -C
-    go-format:
-      globs:
-        - "*.go"
-      run: gofmt -w .
 
 prepare-commit-msg: #npm install -g commitizen && git config --global core.editor cat
   commands:
