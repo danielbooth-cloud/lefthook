@@ -1,4 +1,4 @@
-# lefthook.yaml 
+# lefthook.yaml
 pre-commit:
   parallel: true
   commands:
@@ -10,18 +10,22 @@ pre-commit:
           exit 1
         fi
     terraform-format:
-      globs: 
+      globs:
         - "*.tf"
         - "*.tfvars"
       run: terraform fmt -recursive
     terraform-lint:
-      globs: 
+      globs:
         - "*.tf"
         - "*.tfvars"
       run: tflint --recursive
     detect-secrets: #brew install detect-secrets jq
       run: |
         detect-secrets scan --disable-plugin KeywordDetector | jq 'del(.plugins_used, .filters_used) | {version: .version, results: .results, generated_at: .generated_at}' -C
+    go-format:
+      globs:
+        - "*.go"
+      run: gofmt -w .
 
 prepare-commit-msg: #npm install -g commitizen && git config --global core.editor cat
   commands:
