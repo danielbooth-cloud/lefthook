@@ -21,18 +21,19 @@ pre-commit:
       globs:
         - "*.go"
       run: gofmt -w .
+    yaml-format:
+      stage_fixed: true
+      globs:
+        - "*.yaml"
+        - "*.yml"
+      run: |
+        yamlfmt .
 
     terraform-lint:
       globs:
         - "*.tf"
         - "*.tfvars"
       run: tflint --recursive
-    yaml-lint:
-      globs:
-        - "*.yaml"
-        - "*.yml"
-      run: |
-        yamllint . -d "{extends: default, rules: {line-length: disable, document-start: disable}}"
 
     detect-secrets: #brew install detect-secrets jq
       run: |
