@@ -27,7 +27,7 @@ pre-commit:
         - "*.yaml"
         - "*.yml"
       run: |
-        yamlfmt .
+        find . -type f \( -name "*.yaml" -o -name "*.yml" \) -not -path "*/helmfile/*" -exec yamlfmt {} +
 
     terraform-lint:
       globs:
