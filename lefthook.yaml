@@ -21,13 +21,13 @@ pre-commit:
       globs:
         - "*.go"
       run: gofmt -w .
-    yaml-format:
-      stage_fixed: true
-      globs:
-        - "*.yaml"
-        - "*.yml"
-      run: |
-        find . -type f \( -name "*.yaml" -o -name "*.yml" \) -not -path "*/helmfile/*" -exec yamlfmt {} +
+    # yaml-format:
+    #   stage_fixed: true
+    #   globs:
+    #     - "*.yaml"
+    #     - "*.yml"
+    #   run: |
+    #     find . -type f \( -name "*.yaml" -o -name "*.yml" \) -not -path "*/helmfile/*" -exec yamlfmt {} +
 
     terraform-lint:
       globs:
